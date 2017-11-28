@@ -7,8 +7,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.HttpRequestHandler;
-import com.lukhol.chat.services.HelloService;
-import com.lukhol.chat.services.HelloServiceImpl;
+
+import com.lukhol.chat.services.ChatService;
+import com.lukhol.chat.services.ChatServiceImpl;
 
 @Configuration
 @ComponentScan
@@ -16,7 +17,7 @@ import com.lukhol.chat.services.HelloServiceImpl;
 public class Application {
 	
 	@Autowired
-	HelloService helloService;
+	ChatService chatService;
 	
 	@Autowired
 	Endpoints endpoints;
@@ -27,20 +28,21 @@ public class Application {
 
 	//Endpoints:
 	//-----------------------------------------------------------------------
-	@Bean(name = "/burlapHello")
-	HttpRequestHandler burlap(){
-		return endpoints.burlap(HelloService.class, helloService);
+	
+	@Bean(name = "/burlapChat")
+	HttpRequestHandler burlapChat(){
+		return endpoints.burlap(ChatService.class, chatService);
 	}
 	
-	@Bean(name = "/hessianHello")
-	HttpRequestHandler hessian(){
-		return endpoints.hessian(HelloService.class, helloService);
+	@Bean(name = "/hessianChat")
+	HttpRequestHandler hessianChat(){
+		return endpoints.hessian(ChatService.class, chatService);
 	}
 	
 	//------------------------------------------------------------------------
-	@Bean
-	HelloService helloService(){
-		return new HelloServiceImpl();
-	}
 	
+	@Bean
+	ChatService chatService(){
+		return new ChatServiceImpl();
+	}
 }
