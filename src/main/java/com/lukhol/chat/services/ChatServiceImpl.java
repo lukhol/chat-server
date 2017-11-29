@@ -40,8 +40,11 @@ public class ChatServiceImpl implements ChatService {
 	public synchronized boolean logout(User user) {
 		if(loggedUsersList.contains(user.getUsername())){
 			loggedUsersList.remove(user.getUsername());
-			
+			waitingUsersList.remove(user.getUsername());
 			logger.info(user.getUsername() + " succesfully logged out.");
+			
+			waitingUsersList.forEach(usr -> System.out.println(usr));
+			notifyAll();
 			
 			return true;
 		}
@@ -67,6 +70,7 @@ public class ChatServiceImpl implements ChatService {
 
 	@Override
 	public synchronized boolean sendMessage(User sender, User receiver, Message message) {
+		logger.info("Started sendMessage: " + message.getMessageContent());
 		String key = createKey(sender, receiver);
 		
 		Conversation conversation;
@@ -83,6 +87,8 @@ public class ChatServiceImpl implements ChatService {
 		conversation.setUpToDate(false);
 		messageToSend.add(message);
 		
+		//messageToSend.forEach(msg -> System.out.println(msg.getMessageContent()));
+		
 		notifyAll();
 		
 		return true;
@@ -92,7 +98,9 @@ public class ChatServiceImpl implements ChatService {
 	public synchronized List<Message> waitForMessages(User waiter) {
 		
 		List<Message> messagesList = new ArrayList<Message>();
-		waitingUsersList.add(waiter.getUsername());
+		
+		if(!waitingUsersList.contains(waiter.getUsername()))
+			waitingUsersList.add(waiter.getUsername());
 		
 		try {
 			while(waitingUsersList.contains(waiter.getUsername())){
@@ -115,7 +123,7 @@ public class ChatServiceImpl implements ChatService {
 		return messagesList;
 	}
 	
-	private String createKey(User sender, User receiver) {
+	private synchronized String createKey(User sender, User receiver) {
 		String senderUsername = sender.getUsername();
 		String reveiverUsername = receiver.getUsername();
 		

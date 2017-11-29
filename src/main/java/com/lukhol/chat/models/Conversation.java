@@ -1,8 +1,11 @@
 package com.lukhol.chat.models;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Conversation {
+public class Conversation implements Serializable {
+	
+	private static final long serialVersionUID = -8768479341445929890L;
 	
 	private User userOne;
 	private User userTwo;
