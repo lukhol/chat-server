@@ -7,11 +7,13 @@ import com.lukhol.chat.models.Message;
 import com.lukhol.chat.models.User;
 
 public interface ChatService {
-	public boolean login(User user);
-	public boolean logout(User user);
+	boolean login(User user);
+	void logout(User user);
 	
-	public Conversation createConversation(User sender, User receiver);
-	public boolean sendMessage(User sender, User receiver, Message message);
+	Conversation createConversation(User sender, User receiver);
+	boolean sendMessage(User sender, User receiver, Message message);
 	
-	public List<Message> waitForMessages(User waiter);
+	List<Message> waitForMessages(User waiter);
+	
+	List<String> getLoggedInUsers();
 }

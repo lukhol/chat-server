@@ -37,21 +37,18 @@ public class ChatServiceImpl implements ChatService {
 	}
 
 	@Override
-	public synchronized boolean logout(User user) {
+	public synchronized void logout(User user) {
 		if(loggedUsersList.contains(user.getUsername())){
 			loggedUsersList.remove(user.getUsername());
 			waitingUsersList.remove(user.getUsername());
 			logger.info(user.getUsername() + " succesfully logged out.");
-			
-			waitingUsersList.forEach(usr -> System.out.println(usr));
 			notifyAll();
 			
-			return true;
+			waitingUsersList.forEach(usr -> System.out.println(usr));
+		} 
+		else{
+			logger.info(user.getUsername() + " cannot log out.");
 		}
-		
-		logger.info(user.getUsername() + " cannot log out.");
-		
-		return false;
 	}
 
 	@Override
@@ -87,8 +84,6 @@ public class ChatServiceImpl implements ChatService {
 		conversation.setUpToDate(false);
 		messageToSend.add(message);
 		
-		//messageToSend.forEach(msg -> System.out.println(msg.getMessageContent()));
-		
 		notifyAll();
 		
 		return true;
@@ -105,6 +100,11 @@ public class ChatServiceImpl implements ChatService {
 		try {
 			while(waitingUsersList.contains(waiter.getUsername())){
 				wait();
+				
+				if(!waitingUsersList.contains(waiter.getUsername())){
+					logger.info("Break waiting.");
+					return null;
+				}
 				
 				messagesList = messageToSend.stream()
 					.filter(message -> message.getReceiver().getUsername().equals(waiter.getUsername()))
@@ -134,5 +134,10 @@ public class ChatServiceImpl implements ChatService {
 		} else {
 			return reveiverUsername + senderUsername;
 		}
+	}
+
+	@Override
+	public synchronized List<String> getLoggedInUsers() {
+		return loggedUsersList;
 	}
 }
