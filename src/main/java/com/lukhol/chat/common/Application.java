@@ -13,7 +13,6 @@ import org.springframework.web.HttpRequestHandler;
 
 import com.lukhol.chat.services.ChatService;
 import com.lukhol.chat.services.ChatServiceImpl;
-import com.lukhol.chat.services.ChatServiceWrapperImpl;
 
 @Configuration
 @ComponentScan
@@ -45,7 +44,7 @@ public class Application {
 	
 	@Bean(name ="/xmlRpc")
 	public ServletRegistrationBean servletRegistrationBean(){
-		HttpServlet servlet = new MyXmlRpcServlet(new ChatServiceWrapperImpl(chatService));
+		HttpServlet servlet = new MyXmlRpcServlet(chatService);
 	    return new ServletRegistrationBean(servlet, "/xmlRpc");
 	}
 	
